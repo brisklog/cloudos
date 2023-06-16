@@ -11,7 +11,7 @@ export default defineConfig({
     },
     proxy: {
         '/api/v1': {
-            'target': 'http://super.itmeng.top',
+            'target': 'http://127.0.0.1:18000',
             'changeOrigin': true,
         },
     },

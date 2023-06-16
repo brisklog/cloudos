@@ -12,7 +12,7 @@ export async function loginApi(
         password: string;
     },
 ) {
-    return request<IResponse<types.Token>>('/api/v1/user/login', {
+    return request<IResponse<types.Token>>('/api/user/login', {
         method: HTTP_METHOD.POST,
         data: body,
     }).then(resp => {
@@ -29,7 +29,7 @@ export async function loginApi(
 }
 
 export async function refreshTokenApi(refresh_token: string) {
-    return request<IResponse<types.Token>>('/api/v1/user/refresh', {
+    return request<IResponse<types.Token>>('/api/user/refresh', {
         method: HTTP_METHOD.POST,
         data: {refresh_token: refresh_token},
     }).then(resp => {
