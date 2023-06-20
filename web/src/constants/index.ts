@@ -9,4 +9,4 @@ export const enum HTTP_METHOD {
     DELETE = "DELETE",
 }
 
-export const ignore_apis = ['/api/user/login', '/api/user/refresh']
+export const ignore_apis = ['/api/v1/user/login', '/api/v1/user/refresh']

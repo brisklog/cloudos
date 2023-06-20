@@ -29,14 +29,11 @@ export const layout = () => {
 };
 
 // 与后端约定的响应数据格式
-interface IHeader {
+
+interface IResponse {
     code: number,
     message: string,
     traceId: number,
-}
-
-interface IResponse {
-    header: IHeader,
     data: any;
 }
 
@@ -46,10 +43,9 @@ export const request: RequestConfig = {
     headers: {'Content-Type': 'application/json'},
     errorConfig: {
         errorThrower(resp: IResponse) {
-            if (resp.header.code > 0) {
-                const error: any = new Error(resp.header.message);
-                error.info = resp.header;
-                message.error(resp.header.message);
+            if (resp.code > 0) {
+                const error: any = new Error(resp.message);
+                message.error(resp.message);
                 throw error; // 抛出自制的错误
             }
         },

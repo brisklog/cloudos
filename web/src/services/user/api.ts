@@ -12,12 +12,12 @@ export async function loginApi(
         password: string;
     },
 ) {
-    return request<IResponse<types.Token>>('/api/user/login', {
+    return request<IResponse<types.Token>>('/api/v1/user/login', {
         method: HTTP_METHOD.POST,
         data: body,
     }).then(resp => {
-        if (resp.header.code > 0) {
-            message.warning(resp.header.message)
+        if (resp.code > 0) {
+            message.warning(resp.message)
         } else {
             store.storage.set(TOKEN_KEY, resp.data)
         }
@@ -29,12 +29,12 @@ export async function loginApi(
 }
 
 export async function refreshTokenApi(refresh_token: string) {
-    return request<IResponse<types.Token>>('/api/user/refresh', {
+    return request<IResponse<types.Token>>('/api/v1/user/refresh', {
         method: HTTP_METHOD.POST,
         data: {refresh_token: refresh_token},
     }).then(resp => {
-        if (resp.header.code > 0) {
-            message.warning(resp.header.message)
+        if (resp.code > 0) {
+            message.warning(resp.message)
         } else {
             store.storage.set(TOKEN_KEY, resp.data)
         }
