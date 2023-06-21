@@ -2,7 +2,6 @@ import {defineConfig} from '@umijs/max';
 
 export default defineConfig({
     antd: {},
-    access: {},
     model: {},
     initialState: {},
     request: {},
@@ -17,27 +16,61 @@ export default defineConfig({
     },
     routes: [
         {
-            path: '/',
-            redirect: '/home',
-        },
-        {
             name: '登陆',
             path: '/login',
             component: './Login',
             layout: false,
         },
         {
-            name: '首页',
-            path: '/home',
+            name: '系统状态',
+            path: '/',
             component: './Home',
+            icon: "DashboardOutlined",
             wrappers: ["@/wrappers/auth"],
         },
         {
-            name: '权限演示',
-            path: '/access',
-            component: './Access',
+            name: '我的文档',
+            path: '/doc',
+            component: './Doc',
+            icon: "FolderOutlined",
             wrappers: ["@/wrappers/auth"]
         },
+        {
+            name: '云盘管理',
+            path: '/folder',
+            component: './Folder',
+            icon: "DatabaseOutlined",
+            wrappers: ["@/wrappers/auth"]
+        },
+        {
+            name: '应用管理',
+            path: '/appstore',
+            component: './Appstore',
+            icon: "AppstoreOutlined",
+            wrappers: ["@/wrappers/auth"]
+        },
+        {
+            name: '离线下载',
+            path: '/download',
+            component: './Download',
+            icon: "CloudDownloadOutlined",
+            wrappers: ["@/wrappers/auth"]
+        },
+        {
+            name: '回收站',
+            path: '/trash',
+            icon: "DeleteOutlined",
+            component: './Trash',
+            wrappers: ["@/wrappers/auth"]
+        },
+        {
+            name: '控制面板',
+            path: '/config',
+            icon: "ControlOutlined",
+            component: './Config',
+            wrappers: ["@/wrappers/auth"]
+        },
+        
     ],
     npmClient: 'pnpm',
 });

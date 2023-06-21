@@ -23,7 +23,8 @@ const onFinish = async (values: any) => {
 const LoginPage: React.FC = () => {
     // 如果已经登陆, 跳转到首页
     const token = storage.get(TOKEN_KEY) as Token
-    if (token && token.expire_time > 0) {
+    console.log(token);
+    if (token && token.expireTime > 0) {
         return <Navigate to="/"/>
     }
     return (

@@ -57,10 +57,10 @@ export const request: RequestConfig = {
                 const token = store.storage.get(TOKEN_KEY) as types.Token
                 options.headers = {
                     ...options.headers,
-                    Authorization: `Bearer ${token.access_token}`,
+                    Authorization: `Bearer ${token.accessToken}`,
                 }
-                if (Date.now() < token.expire_time * 1000) {
-                    refreshTokenApi(token.refresh_token).then(data => {
+                if (Date.now() < token.expireTime * 1000) {
+                    refreshTokenApi(token.refreshToken).then(data => {
                         store.storage.set(TOKEN_KEY, data)
                     }).catch(err => {
                         history.push("/login")
