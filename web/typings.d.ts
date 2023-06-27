@@ -6,3 +6,10 @@ declare interface IResponse<Data> {
     traceId: number;
     data: Data;
 }
+
+declare interface IPager {
+    index: number;
+    size: number;
+    count: number;
+    disable: boolean;
+}

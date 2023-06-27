@@ -61,14 +61,14 @@ func (m *Middleware) AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		user := new(model.UserDao).First("user_id = ?", authToken.UserId)
+		user := new(model.UserDao).First("id = ?", authToken.UserId)
 
 		if user == nil {
 			resp.Code = pb.ECode_NotFoundUser
 			return
 		}
 
-		if user.Status != pb.UserStatus_DISABLED.String() {
+		if user.Status == pb.UserStatus_DISABLED.String() {
 			resp.Code = pb.ECode_UserDisabled
 			return
 		}

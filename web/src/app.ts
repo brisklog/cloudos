@@ -59,7 +59,8 @@ export const request: RequestConfig = {
                     ...options.headers,
                     Authorization: `Bearer ${token.accessToken}`,
                 }
-                if (Date.now() < token.expireTime * 1000) {
+                console.log(token.expireTime * 1000, Date.now())
+                if (Date.now() > token.expireTime * 1000) {
                     refreshTokenApi(token.refreshToken).then(data => {
                         store.storage.set(TOKEN_KEY, data)
                     }).catch(err => {

@@ -30,12 +30,21 @@ func Register(engine *gin.Engine) *Api {
 
 	// user
 	api.route(http.MethodPost, "/api/v1/user/login", api.UserLogin, pb.UserRole_GUEST)
+	// api.route(http.MethodPost, "/api/v1/user/refresh", api.UserLogin, pb.UserRole_GUEST)
 
 	// folder
 	api.route(http.MethodPost, "/api/v1/folder/list", api.FolderList, pb.UserRole_USER)
 	api.route(http.MethodPost, "/api/v1/folder/create", api.FolderCreate, pb.UserRole_USER)
 	api.route(http.MethodPost, "/api/v1/folder/update", api.FolderUpdate, pb.UserRole_USER)
 	api.route(http.MethodPost, "/api/v1/folder/delete", api.FolderDelete, pb.UserRole_USER)
+
+	// note
+	api.route(http.MethodPost, "/api/v1/note/list", api.NoteList, pb.UserRole_USER)
+	api.route(http.MethodPost, "/api/v1/note/create", api.NoteCreate, pb.UserRole_USER)
+	api.route(http.MethodPost, "/api/v1/note/update", api.NoteUpdate, pb.UserRole_USER)
+	api.route(http.MethodPost, "/api/v1/note/delete", api.NoteDelete, pb.UserRole_USER)
+	api.route(http.MethodPost, "/api/v1/note/addtag", api.NoteAddtag, pb.UserRole_USER)
+	api.route(http.MethodPost, "/api/v1/note/deltag", api.NoteDeltag, pb.UserRole_USER)
 
 	return api
 }
