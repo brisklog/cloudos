@@ -7,6 +7,8 @@ import (
 func (c *Controller) Deal() (any, pb.ECode) {
 	params := c.Params.(*Params)
 
+	params.Pager.Count = 1
+
 	reply := Reply{
 		Pager: params.Pager,
 		List:  make([]Item, 0),

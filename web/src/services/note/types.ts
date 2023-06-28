@@ -17,12 +17,12 @@ export interface Label {
 
 export type NoteListParams = {
     pager: IPager;
-    topicId: number;
+    topicId?: number;
     keyword: string;
     // label: string;
 }
 
 export type NoteListData = {
     pager: IPager;
-    data: Note[];
+    list: Note[];
 }

@@ -10,6 +10,6 @@ declare interface IResponse<Data> {
 declare interface IPager {
     index: number;
     size: number;
-    count: number;
-    disable: boolean;
+    count?: number;
+    disable?: boolean;
 }
