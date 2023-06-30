@@ -59,7 +59,6 @@ export const request: RequestConfig = {
                     ...options.headers,
                     Authorization: `Bearer ${token.accessToken}`,
                 }
-                console.log(token.expireTime * 1000, Date.now())
                 if (Date.now() > token.expireTime * 1000) {
                     refreshTokenApi(token.refreshToken).then(data => {
                         store.storage.set(TOKEN_KEY, data)
@@ -81,9 +80,7 @@ export const request: RequestConfig = {
         // 直接写一个 function，作为拦截器
         (response) => {
             // 不再需要异步处理读取返回体内容，可直接在data中读出，部分字段可在 config 中找到
-            const {data = {} as any, config} = response;
-            console.log(data);
-            console.log(config);
+            // const {data = {} as any, config} = response;
             // do something
             return response;
         },

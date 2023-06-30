@@ -17,7 +17,7 @@ func (c *Controller) Deal() (any, pb.ECode) {
 	}
 
 	dao := new(model.NoteDao)
-	tx := dao.Db().Scopes(dao.NotDeleted).Order("update_time desc")
+	tx := dao.Db().Model(new(pb.Note)).Scopes(dao.NotDeleted).Order("update_time desc")
 
 	if len(params.Keyword) > 0 {
 		keyword := dao.Like(params.Keyword)
@@ -32,14 +32,20 @@ func (c *Controller) Deal() (any, pb.ECode) {
 		tx.Where("id in (select note_id from note_label where name like ?)", dao.Like(params.Label))
 	}
 
+	if params.UpdateTimeRange != nil {
+		tx.Where("update_time between ? and ?", params.UpdateTimeRange.Left, params.UpdateTimeRange.Right)
+	}
+
 	var notes []*pb.Note
 	tx.Count(&params.Pager.Count)
-	tx.Scopes(dao.Paginate(params.Pager)).Find(&notes)
+	err := tx.Scopes(dao.Paginate(params.Pager)).Find(&notes).Error
+	if err != nil {
+		panic(err)
+	}
 	reply := Reply{
 		Pager: params.Pager,
 		List:  make([]Item, 0, len(notes)),
 	}
-
 	noteLables := dao.NoteLabels(notes)
 
 	for _, note := range notes {

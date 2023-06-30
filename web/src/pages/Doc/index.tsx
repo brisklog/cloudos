@@ -1,10 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
+import { message } from "antd";
 import { ProTable } from '@ant-design/pro-components';
 import { Button } from 'antd';
 import { useRef } from 'react';
-import { Note, NoteListData } from '@/services/note/types';
-import { noteListApi } from '@/services/note/api';
+import { Note, NoteListData, NoteListParams } from '@/services/note/types';
+import { noteListApi, noteTopicApi } from '@/services/note/api';
 
 
 const columns: ProColumns<Note>[] = [
@@ -16,7 +17,7 @@ const columns: ProColumns<Note>[] = [
     },
     {
         title: '标题',
-        dataIndex: 'name',
+        dataIndex: 'title',
         copyable: true,
         ellipsis: true,
         search: false,
@@ -27,32 +28,35 @@ const columns: ProColumns<Note>[] = [
         hideInTable: true,
     },
     {
-        disable: true,
         title: '主题',
-        dataIndex: 'topicName',
-        search: false,
+        dataIndex: 'topic',
+        valueType: 'select',
+        request: async () => {
+            return await noteTopicApi().then((labels: string[]) => {
+                let values = new Array();
+                for (let index = 0; index < labels.length; index++) {
+                    const label = labels[index];
+                    values.push({ label: label, value: label })
+                }
+                return values
+            }).catch(err => {
+                return err
+            });
+        },
     },
     {
-        title: '更新时间',
+        title: '修改时间',
         key: 'showTime',
         dataIndex: 'updateTime',
-        valueType: 'date',
+        valueType: 'dateTime',
         sorter: true,
         hideInSearch: true,
     },
     {
-        title: '更新时间',
-        dataIndex: 'updateTime',
+        title: '时间',
+        dataIndex: 'updateTimeRange',
         valueType: 'dateRange',
         hideInTable: true,
-        search: {
-            transform: (value: any[]) => {
-                return {
-                    start: value[0],
-                    end: value[1],
-                };
-            },
-        },
     },
     {
         title: '操作',
@@ -70,6 +74,9 @@ const columns: ProColumns<Note>[] = [
             <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
                 预览
             </a>,
+            <a href={record.url} target="_blank" rel="noopener noreferrer" key="view">
+                设定任务
+            </a>,
         ],
     },
 ];
@@ -85,31 +92,34 @@ export default () => {
                 params: {
                     pageSize: number;
                     current: number;
+                    keyword: string;
+                    topic: any;
+                    updateTimeRange: any[];
                 },
-                sort: any,
-                filter: { keyword: string; updateTime: { start: number, end: number } },
             ) => {
-                return await noteListApi({
+                let apiParams: NoteListParams = {
                     pager: {
                         index: params.current,
                         size: params.pageSize,
                     },
-                    // topicId: 0, 
-                    keyword: filter.keyword
-                }).then((data: NoteListData) => {
-                    console.log("success?", data.list)
+                    keyword: params.keyword,
+                    topic: params.topic,
+                }
+                if (params.updateTimeRange !== undefined) {
+                    apiParams.updateTimeRange = {
+                        left: new Date(params.updateTimeRange[0]).getTime() / 1000 - 28800,
+                        right: new Date(params.updateTimeRange[1]).getTime() / 1000 + 57600,
+                    }
+                }
+                return await noteListApi(apiParams).then((data: NoteListData) => {
                     return {
                         data: data.list,
                         success: true,
                         total: data.pager.count,
                     }
                 }).catch((err) => {
-                    console.log("error?")
-                    return {
-                        data: err,
-                        success: false,
-                        total: 0,
-                    }
+                    message.error(err)
+                    return err
                 });
             }}
             columnsState={{
@@ -128,24 +138,11 @@ export default () => {
                     listsHeight: 400,
                 },
             }}
-            form={{
-                // 由于配置了 transform，提交的参与与定义的不同这里需要转化一下
-                syncToUrl: (values: { start: any; end: any; }, type: string) => {
-                    if (type === 'get') {
-                        return {
-                            ...values,
-                            createTime: [values.start, values.end],
-                        };
-                    }
-                    return values;
-                },
-            }}
             pagination={{
-                pageSize: 10,
-                onChange: (page: number) => console.log(page),
+                pageSize: 20,
             }}
             dateFormatter="string"
-            headerTitle="高级表格"
+            // headerTitle="我的文档"
             toolBarRender={() => [
                 <Button
                     key="button"

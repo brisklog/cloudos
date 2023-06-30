@@ -16,10 +16,11 @@ func NewController(ctx *gin.Context) *Controller {
 }
 
 type Params struct {
-	Pager   *pb.Pager `json:"pager"`
-	Topic   string    `json:"topic"`
-	Label   string    `json:"label"`   // like labels
-	Keyword string    `json:"keyword"` // like name or content
+	Pager           *pb.Pager    `json:"pager"`
+	Topic           string       `json:"topic"`
+	Label           string       `json:"label"`   // like labels
+	Keyword         string       `json:"keyword"` // like name or content
+	UpdateTimeRange *pb.I64Range `json:"updateTimeRange"`
 }
 
 type Reply struct {

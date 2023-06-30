@@ -20,3 +20,19 @@ export async function noteListApi(params: types.NoteListParams) {
             return err;
         });
 }
+
+export async function noteTopicApi() {
+    return request<IResponse<string[]>>('/api/v1/note/topics', {
+        method: HTTP_METHOD.GET,
+    })
+        .then((resp) => {
+            if (resp.code > 0) {
+                message.warning(resp.message);
+            }
+            return resp.data;
+        })
+        .catch((err) => {
+            message.error(err);
+            return err;
+        });
+}

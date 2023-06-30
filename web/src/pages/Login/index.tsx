@@ -16,14 +16,13 @@ const onFinish = async (values: any) => {
         message.info("登陆成功")
         history.back()
     }).catch(err => {
-        console.log("err", err)
+        message.error("登陆失败:", err)
     })
 };
 
 const LoginPage: React.FC = () => {
     // 如果已经登陆, 跳转到首页
     const token = storage.get(TOKEN_KEY) as Token
-    console.log(token);
     if (token && token.expireTime > 0) {
         return <Navigate to="/"/>
     }

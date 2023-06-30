@@ -6,6 +6,7 @@ import (
 	"cloudos/internal/controller/note/delete"
 	"cloudos/internal/controller/note/deltag"
 	"cloudos/internal/controller/note/list"
+	"cloudos/internal/controller/note/topics"
 	"cloudos/internal/controller/note/update"
 
 	"github.com/gin-gonic/gin"
@@ -81,4 +82,16 @@ func (a *Api) NoteAddtag(ctx *gin.Context) {
 // @Router /api/note/deltag [post]
 func (a *Api) NoteDeltag(ctx *gin.Context) {
 	a.Scheduler(deltag.NewController(ctx))
+}
+
+// NoteTopics
+// @summary 主题列表
+// @Tags 文档
+// @Accept json
+// @Produce json
+// @Param param body topics.Params true "请求参数"
+// @Response 200 object system.Response{data=topics.Reply} "调用成功"
+// @Router /api/note/topics [get]
+func (a *Api) NoteTopics(ctx *gin.Context) {
+	a.Scheduler(topics.NewController(ctx))
 }

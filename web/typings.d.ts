@@ -13,3 +13,8 @@ declare interface IPager {
     count?: number;
     disable?: boolean;
 }
+
+declare interface ITimeRange {
+    left: number;
+    right: number;
+}
