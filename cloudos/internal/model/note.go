@@ -36,3 +36,20 @@ func (dao *NoteDao) First(query any, args ...any) *pb.Note {
 	}
 	return obj
 }
+
+func (dao *NoteDao) NoteLabels(notes []*pb.Note) map[int64][]string {
+	result := make(map[int64][]string)
+	if len(notes) == 0 {
+		return result
+	}
+	var noteIds []int64
+	for _, note := range notes {
+		noteIds = append(noteIds, note.Id)
+	}
+	var labels []*pb.NoteLabel
+	dao.Db().Scopes(dao.NotDeleted).Where("note_id in ?", noteIds).Find(&labels)
+	for _, label := range labels {
+		result[label.NoteId] = append(result[label.NoteId], label.Name)
+	}
+	return result
+}

@@ -16,11 +16,10 @@ func NewController(ctx *gin.Context) *Controller {
 }
 
 type Params struct {
-	Pager    *pb.Pager `json:"pager"`
-	FolderId int64     `json:"parentId"`
-	TopicId  int64     `json:"topicId"`
-	Label    string    `json:"label"`   // like labels
-	Keyword  string    `json:"keyword"` // like name or content
+	Pager   *pb.Pager `json:"pager"`
+	Topic   string    `json:"topic"`
+	Label   string    `json:"label"`   // like labels
+	Keyword string    `json:"keyword"` // like name or content
 }
 
 type Reply struct {
@@ -29,15 +28,10 @@ type Reply struct {
 }
 
 type Item struct {
-	Id         int64   `json:"id"`
-	Name       string  `json:"name"`
-	TopicName  string  `json:"topicName"`
-	CreateTime string  `json:"createTime"`
-	UpdateTime string  `json:"updateTime"`
-	Labels     []Label `json:"labels"`
-}
-
-type Label struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
+	Id         int64    `json:"id"`
+	Title      string   `json:"title"`
+	Topic      string   `json:"topic"`
+	Labels     []string `json:"labels"`
+	CreateTime string   `json:"createTime"`
+	UpdateTime string   `json:"updateTime"`
 }
