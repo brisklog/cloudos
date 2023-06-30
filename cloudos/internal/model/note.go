@@ -37,6 +37,12 @@ func (dao *NoteDao) First(query any, args ...any) *pb.Note {
 	return obj
 }
 
+func (dao *NoteDao) Labels(noteId int64) []string {
+	labels := make([]string, 0)
+	dao.Db().Model(new(pb.NoteLabel)).Scopes(dao.NotDeleted).Where("note_id = ?", noteId).Select("name").Scan(&labels)
+	return labels
+}
+
 func (dao *NoteDao) NoteLabels(notes []*pb.Note) map[int64][]string {
 	result := make(map[int64][]string)
 	if len(notes) == 0 {
@@ -52,4 +58,8 @@ func (dao *NoteDao) NoteLabels(notes []*pb.Note) map[int64][]string {
 		result[label.NoteId] = append(result[label.NoteId], label.Name)
 	}
 	return result
+}
+
+func (dao *NoteDao) ListSelectFields() []string {
+	return []string{"title", "topic", "create_time", "update_time"}
 }

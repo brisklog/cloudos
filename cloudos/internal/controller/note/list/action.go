@@ -2,8 +2,8 @@ package list
 
 import (
 	"cloudos/common/pb"
+	"cloudos/common/utils"
 	"cloudos/internal/model"
-	"time"
 )
 
 func (c *Controller) Deal() (any, pb.ECode) {
@@ -17,7 +17,7 @@ func (c *Controller) Deal() (any, pb.ECode) {
 	}
 
 	dao := new(model.NoteDao)
-	tx := dao.Db().Model(new(pb.Note)).Scopes(dao.NotDeleted).Order("update_time desc")
+	tx := dao.Db().Model(new(pb.Note)).Scopes(dao.NotDeleted).Order("update_time desc").Select("id", dao.ListSelectFields())
 
 	if len(params.Keyword) > 0 {
 		keyword := dao.Like(params.Keyword)
@@ -54,8 +54,8 @@ func (c *Controller) Deal() (any, pb.ECode) {
 			Title:      note.Title,
 			Topic:      note.Topic,
 			Labels:     []string{},
-			CreateTime: time.Unix(note.CreateTime, 0).Format(time.DateTime),
-			UpdateTime: time.Unix(note.UpdateTime, 0).Format(time.DateTime),
+			CreateTime: utils.Datetime(note.CreateTime),
+			UpdateTime: utils.Datetime(note.UpdateTime),
 		}
 		if labels, ok := noteLables[note.Id]; ok {
 			item.Labels = labels

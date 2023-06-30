@@ -46,6 +46,7 @@ func Register(engine *gin.Engine) *Api {
 	api.route(http.MethodPost, "/api/v1/note/addtag", api.NoteAddtag, pb.UserRole_USER)
 	api.route(http.MethodPost, "/api/v1/note/deltag", api.NoteDeltag, pb.UserRole_USER)
 	api.route(http.MethodGet, "/api/v1/note/topics", api.NoteTopics, pb.UserRole_USER)
+	api.route(http.MethodGet, "/api/v1/note/info", api.NoteInfo, pb.UserRole_USER)
 
 	return api
 }
