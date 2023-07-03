@@ -29,10 +29,9 @@ type Reply struct {
 }
 
 type Item struct {
-	Id         int64    `json:"id"`
-	Title      string   `json:"title"`
-	Topic      string   `json:"topic"`
-	Labels     []string `json:"labels"`
-	CreateTime string   `json:"createTime"`
-	UpdateTime string   `json:"updateTime"`
+	Id         int64  `json:"id"`
+	Title      string `json:"title"`
+	Topic      string `json:"topic"`
+	CreateTime string `json:"createTime"`
+	UpdateTime string `json:"updateTime"`
 }

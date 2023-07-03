@@ -18,7 +18,7 @@ export const useUserStore = defineStore("user", () => {
         return new Promise((resolve, reject) => {
             loginApi(loginData)
                 .then((res) => {
-                    res.data.expire_time = res.data.expire_time * 1000
+                    res.data.expireTime = res.data.expireTime * 1000
                     setToken(res.data)
                     token.value = res.data
                     resolve(true)
@@ -33,7 +33,7 @@ export const useUserStore = defineStore("user", () => {
         return new Promise((resolve, reject) => {
             refreshTokenApi(refreshData)
                 .then((res) => {
-                    res.data.expire_time = res.data.expire_time * 1000
+                    res.data.expireTime = res.data.expireTime * 1000
                     setToken(res.data)
                     token.value = res.data
                     resolve(true)
@@ -68,14 +68,10 @@ export const useUserStore = defineStore("user", () => {
     const resetToken = () => {
         removeToken()
         token.value = {
-            id: 0,
-            user_id: 0,
-            access_token: "",
-            refresh_token: "",
-            expire_time: 0,
-            issued_time: 0,
-            create_time: 0,
-            update_time: 0
+            userId: 0,
+            accessToken: "",
+            refreshToken: "",
+            expireTime: 0
         }
     }
     // 重置 visited views 和 cached views

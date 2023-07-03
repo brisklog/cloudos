@@ -21,16 +21,22 @@ export function noteSaveApi(data: types.noteSaveRequest) {
 export function noteDeleteApi(id: number) {
     return request<NullResponse>({
         url: "/note/delete",
-        method: "delete",
+        method: "post",
         data: { id: id }
     })
 }
 
 export function noteInfoApi(id: number) {
-    console.log("noteInfoApi:", id)
     return request<ResponseIface<types.Note>>({
         url: "/note/info",
         method: "get",
         params: { id: id }
+    })
+}
+
+export function noteTopicsApi() {
+    return request<ResponseIface<string[]>>({
+        url: "/note/topics",
+        method: "get"
     })
 }

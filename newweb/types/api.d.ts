@@ -19,3 +19,8 @@ declare interface TimeRangeIface {
   left: number;
   right: number;
 }
+
+declare interface OptionIface {
+  label: string;
+  value: string;
+}

@@ -1,12 +1,13 @@
 <script lang="ts" setup>
 import { reactive, ref, watch } from "vue"
-import { noteListApi, noteDeleteApi } from "@/api/note"
+import { noteListApi, noteDeleteApi, noteInfoApi, noteTopicsApi } from "@/api/note"
 import { noteListRequest } from "@/api/note/types"
 import { type FormInstance, ElMessage, ElMessageBox } from "element-plus"
 import { Search, Refresh, CirclePlus, RefreshRight } from "@element-plus/icons-vue"
 import { usePagination } from "@/hooks/usePagination"
 import { Note } from "@/api/note/types"
 import router from "@/router"
+import { OptionIface } from "types/api"
 
 defineOptions({
     name: "NoteList"
@@ -19,8 +20,15 @@ const previewDialog = ref({
     content: ""
 })
 
+const topicOptions = ref<OptionIface[]>([])
+
+noteTopicsApi().then((resp) => {
+    resp.data.forEach((v) => {
+        topicOptions.value.push({ value: v, label: v })
+    })
+})
+
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
-//#region 删
 const handleDelete = (row: Note) => {
     ElMessageBox.confirm(`< ${row.title} >`, "删除笔记", {
         confirmButtonText: "删除",
@@ -33,9 +41,7 @@ const handleDelete = (row: Note) => {
         })
     })
 }
-//#endregion
 
-//#region save
 const currentUpdateId = ref<number>(0)
 const handleSave = (row: Note | null) => {
     if (row != null) {
@@ -46,9 +52,7 @@ const handleSave = (row: Note | null) => {
         query: { id: currentUpdateId.value }
     })
 }
-//#endregion
 
-//#region 查
 const tableData = ref<Note[]>([])
 const searchFormRef = ref<FormInstance | null>(null)
 const searchData = reactive({
@@ -57,6 +61,7 @@ const searchData = reactive({
     timeRange: []
 })
 
+// 刷新列表
 const handleRefresh = () => {
     loading.value = true
 
@@ -68,7 +73,7 @@ const handleRefresh = () => {
             disable: false
         },
         keyword: searchData.keyword,
-        topic: searchData.keyword
+        topic: searchData.topic
     }
 
     if (searchData.timeRange.length === 2) {
@@ -90,12 +95,16 @@ const handleRefresh = () => {
             loading.value = false
         })
 }
+
+// 搜索
 const handleSearch = () => {
     if (paginationData.currentPage === 1) {
         handleRefresh()
     }
     paginationData.currentPage = 1
 }
+
+// 重置搜索条件
 const resetSearch = () => {
     searchFormRef.value?.resetFields()
     if (paginationData.currentPage === 1) {
@@ -103,12 +112,18 @@ const resetSearch = () => {
     }
     paginationData.currentPage = 1
 }
-//#endregion
 
+// 预览
 const contentPreview = (row: Note) => {
-    previewDialog.value.visible = true
-    previewDialog.value.title = row.title
-    previewDialog.value.content = row.content
+    noteInfoApi(row.id)
+        .then((resp) => {
+            previewDialog.value.visible = true
+            previewDialog.value.title = resp.data.title
+            previewDialog.value.content = resp.data.content
+        })
+        .finally(() => {
+            loading.value = false
+        })
 }
 
 /** 监听分页参数的变化 */
@@ -122,10 +137,17 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], handleR
                 <el-form-item prop="keyword" label="关键词">
                     <el-input v-model="searchData.keyword" placeholder="关键词" />
                 </el-form-item>
-                <el-form-item prop="keyword" label="主题">
-                    <el-select v-model="searchData.topic" filterable placeholder="选择主题" />
+                <el-form-item prop="topic" label="主题">
+                    <el-select v-model="searchData.topic" filterable placeholder="选择主题">
+                        <el-option
+                            v-for="item in topicOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        />
+                    </el-select>
                 </el-form-item>
-                <el-form-item prop="keyword" label="主题">
+                <el-form-item prop="timeRange" label="时间">
                     <el-date-picker
                         v-model="searchData.timeRange"
                         type="daterange"
@@ -161,13 +183,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], handleR
                             <el-tag>{{ scope.row.topic }}</el-tag>
                         </template>
                     </el-table-column>
-                    <el-table-column label="标签" align="center">
-                        <template #default="scope">
-                            <el-tag v-for="item in scope.row.labels" effect="light">
-                                {{ item }}
-                            </el-tag>
-                        </template>
-                    </el-table-column>
                     <el-table-column prop="createTime" label="创建时间" align="center" />
                     <el-table-column prop="updateTime" label="更新时间" align="center" />
                     <el-table-column fixed="right" label="操作" width="200" align="center">
@@ -189,7 +204,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], handleR
                 <v-md-preview :text="previewDialog.content" />
                 <template #footer>
                     <span class="dialog-footer">
-                        <!-- <el-button @click="previewDialog.visible = false">Cancel</el-button> -->
                         <el-button type="primary" @click="previewDialog.visible = false"> 关闭 </el-button>
                     </span>
                 </template>

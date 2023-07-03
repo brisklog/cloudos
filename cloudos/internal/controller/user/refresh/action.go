@@ -13,41 +13,26 @@ import (
 
 func (c *Controller) Deal() (any, pb.ECode) {
 	params := c.Params.(*Params)
-	if params.Username == consts.EmptyStr {
-		return nil, pb.ECode_InvalidUsername
-	}
-	if params.Password == consts.EmptyStr {
-		return nil, pb.ECode_InvalidPassword
-	}
-
-	user := new(model.UserDao).First("username = ?", params.Username)
-	if user == nil {
-		return nil, pb.ECode_NotFoundUser
-	}
-
-	if utils.Hash(params.Password) != user.Password {
-		return nil, pb.ECode_InvalidPassword
+	if params.RefreshToken == consts.EmptyStr {
+		return nil, pb.ECode_AuthTokenInvalid
 	}
 
 	authTokenDao := new(model.AuthTokenDao)
-	token := authTokenDao.First("user_id = ?", user.Id)
+	token := authTokenDao.First("refresh_token = ?", params.RefreshToken)
 
 	current := time.Now().Local()
 
 	if token == nil {
-		token = new(pb.AuthToken)
+		return nil, pb.ECode_AuthTokenInvalid
 	}
 
-	if token.ExpireTime <= current.Unix() {
-		// 没有token或已过期， 需要重新签发
-		expires := current.Add(24 * time.Hour)
-		token.UserId = user.Id
-		token.IssuedTime = current.Unix()
-		token.ExpireTime = expires.Unix()
-		token.AccessToken = utils.SignToken(current, expires, token.ExpireTime)
-		// 使用AccessToken的过期时间加密
-		token.RefreshToken = utils.SignToken(current, current.Add(7*24*time.Hour), token.ExpireTime)
-	}
+	// 重新签发token
+	expires := current.Add(24 * time.Hour)
+	token.IssuedTime = current.Unix()
+	token.ExpireTime = expires.Unix()
+	token.AccessToken = utils.SignToken(current, expires, token.ExpireTime)
+	// 使用AccessToken的过期时间加密
+	token.RefreshToken = utils.SignToken(current, current.Add(7*24*time.Hour), token.ExpireTime)
 
 	// save token
 	if err := authTokenDao.Save(token); err != nil {

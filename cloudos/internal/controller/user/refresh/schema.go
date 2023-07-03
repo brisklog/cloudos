@@ -15,8 +15,7 @@ func NewController(ctx *gin.Context) *Controller {
 }
 
 type Params struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type Reply struct {

@@ -17,7 +17,11 @@ func (c *Controller) Deal() (any, pb.ECode) {
 	}
 
 	dao := new(model.NoteDao)
-	tx := dao.Db().Model(new(pb.Note)).Scopes(dao.NotDeleted).Order("update_time desc").Select("id", dao.ListSelectFields())
+	tx := dao.Db().Model(new(pb.Note)).
+		Scopes(dao.NotDeleted).
+		Where("creator = ?", c.UserId()).
+		Order("update_time desc").
+		Select("id", dao.ListSelectFields())
 
 	if len(params.Keyword) > 0 {
 		keyword := dao.Like(params.Keyword)
@@ -46,19 +50,14 @@ func (c *Controller) Deal() (any, pb.ECode) {
 		Pager: params.Pager,
 		List:  make([]Item, 0, len(notes)),
 	}
-	noteLables := dao.NoteLabels(notes)
 
 	for _, note := range notes {
 		item := Item{
 			Id:         note.Id,
 			Title:      note.Title,
 			Topic:      note.Topic,
-			Labels:     []string{},
 			CreateTime: utils.Datetime(note.CreateTime),
 			UpdateTime: utils.Datetime(note.UpdateTime),
-		}
-		if labels, ok := noteLables[note.Id]; ok {
-			item.Labels = labels
 		}
 
 		reply.List = append(reply.List, item)

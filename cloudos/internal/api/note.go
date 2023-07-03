@@ -2,13 +2,12 @@ package api
 
 import (
 	"cloudos/internal/controller/note/addtag"
-	"cloudos/internal/controller/note/create"
 	"cloudos/internal/controller/note/delete"
 	"cloudos/internal/controller/note/deltag"
 	"cloudos/internal/controller/note/info"
 	"cloudos/internal/controller/note/list"
+	"cloudos/internal/controller/note/save"
 	"cloudos/internal/controller/note/topics"
-	"cloudos/internal/controller/note/update"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,28 +24,16 @@ func (a *Api) NoteList(ctx *gin.Context) {
 	a.Scheduler(list.NewController(ctx))
 }
 
-// NoteCreate
-// @summary 新建文档
-// @Tags 文档
+// NoteSave
+// @summary 保存笔记
+// @Tags 笔记
 // @Accept json
 // @Produce json
-// @Param param body create.Params true "请求参数"
-// @Response 200 object system.Response{data=create.Reply} "调用成功"
-// @Router /api/v1/note/create [post]
-func (a *Api) NoteCreate(ctx *gin.Context) {
-	a.Scheduler(create.NewController(ctx))
-}
-
-// NoteUpdate
-// @summary 更新文档
-// @Tags 文档
-// @Accept json
-// @Produce json
-// @Param param body update.Params true "请求参数"
-// @Response 200 object system.Response{data=update.Reply} "调用成功"
-// @Router /api/v1/note/update [post]
-func (a *Api) NoteUpdate(ctx *gin.Context) {
-	a.Scheduler(update.NewController(ctx))
+// @Param param body save.Params true "请求参数"
+// @Response 200 object system.Response{data=save.Reply} "调用成功"
+// @Router /api/v1/note/save [post]
+func (a *Api) NoteSave(ctx *gin.Context) {
+	a.Scheduler(save.NewController(ctx))
 }
 
 // NoteDelete

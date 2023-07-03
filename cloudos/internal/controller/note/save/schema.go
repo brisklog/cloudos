@@ -1,4 +1,4 @@
-package update
+package save
 
 import (
 	"cloudos/internal/controller"
@@ -15,12 +15,11 @@ func NewController(ctx *gin.Context) *Controller {
 }
 
 type Params struct {
-	Id       int64    `json:"id"`
-	Name     string   `json:"name"`
-	Topic    string   `json:"topic"`
-	Content  string   `json:"content"`
-	FolderId int64    `json:"folderId"`
-	Labels   []string `json:"labels"`
+	Id      int64    `json:"id"`
+	Title   string   `json:"name"`
+	Topic   string   `json:"topic"`
+	Content string   `json:"content"`
+	Labels  []string `json:"labels"`
 }
 
 type Reply struct{}

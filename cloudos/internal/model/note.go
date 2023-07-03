@@ -6,21 +6,23 @@ import (
 	"time"
 
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type NoteDao struct {
 	Base
 }
 
-func (dao *NoteDao) Create(obj *pb.Note) error {
-	obj.CreateTime = time.Now().Local().Unix()
-	obj.UpdateTime = obj.CreateTime
-	return dao.Db().Create(obj).Error
-}
-
-func (dao *NoteDao) Update(obj *pb.Note) error {
-	obj.UpdateTime = time.Now().Local().Unix()
-	return dao.Db().Updates(obj).Error
+func (dao *NoteDao) Save(obj *pb.Note) error {
+	ts := time.Now().Unix()
+	switch obj.Id {
+	case 0:
+		obj.CreateTime = ts
+		obj.UpdateTime = ts
+	default:
+		obj.UpdateTime = ts
+	}
+	return dao.Db().Save(obj).Error
 }
 
 func (dao *NoteDao) Delete(obj *pb.Note) error {
@@ -39,8 +41,36 @@ func (dao *NoteDao) First(query any, args ...any) *pb.Note {
 
 func (dao *NoteDao) Labels(noteId int64) []string {
 	labels := make([]string, 0)
-	dao.Db().Model(new(pb.NoteLabel)).Scopes(dao.NotDeleted).Where("note_id = ?", noteId).Select("name").Scan(&labels)
+	dao.Db().Model(new(pb.NoteLabel)).
+		Scopes(dao.NotDeleted).
+		Where("note_id = ?", noteId).
+		Select("name").
+		Scan(&labels)
 	return labels
+}
+
+func (dao *NoteDao) CleanLabels(noteId int64) error {
+	return dao.Db().Model(new(pb.NoteLabel)).Delete("note_id = ?", noteId).Error
+}
+
+func (dao *NoteDao) AddLabels(noteId int64, labels []string) error {
+	if num := len(labels); num > 0 {
+		labelObjs := make([]*pb.NoteLabel, 0, num)
+		ts := time.Now().Unix()
+		for i := 0; i < num; i++ {
+			labelObjs = append(labelObjs, &pb.NoteLabel{
+				Name:       labels[i],
+				NoteId:     noteId,
+				CreateTime: ts,
+				UpdateTime: ts,
+			})
+		}
+		return dao.Db().Model(new(pb.NoteLabel)).Clauses(clause.OnConflict{
+			Columns:   []clause.Column{{Name: "note_id"}, {Name: "name"}},
+			DoNothing: true,
+		}).Create(&labelObjs).Error
+	}
+	return nil
 }
 
 func (dao *NoteDao) NoteLabels(notes []*pb.Note) map[int64][]string {
